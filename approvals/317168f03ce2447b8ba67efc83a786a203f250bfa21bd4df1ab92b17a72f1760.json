@@ -1,0 +1,25 @@
+{
+  "base_branch": "main",
+  "base_commit": "50be31517a424251a99789608ef2359bfd06cb08",
+  "contract": {
+    "allow": [
+      "src/calculation.py",
+      "tests/test_calculation.py"
+    ],
+    "deny_test_deletions": true,
+    "protect": [
+      "src/payment.py"
+    ],
+    "required_checks": [],
+    "schema_version": 1,
+    "task_id": "cs-ux02-live-allow",
+    "test_paths": [
+      "tests/**",
+      "**/test_*.py",
+      "**/*.test.js",
+      "**/*.spec.ts"
+    ]
+  },
+  "schema_version": 1,
+  "task_branch": "task/sentinel-live-approved"
+}
