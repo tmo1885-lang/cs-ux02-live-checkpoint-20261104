@@ -1,0 +1,41 @@
+name: Constraint Sentinel protected task scope
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  scope:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require same-repository task branch
+        env:
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPOSITORY: ${{ github.repository }}
+        run: test "$HEAD_REPOSITORY" = "$BASE_REPOSITORY"
+      - name: Checkout candidate as data, without persisting credentials
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout owner-protected approvals separately
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: sentinel-approvals
+          path: trusted-approvals
+          persist-credentials: false
+      - name: Check approved task scope only (never execute candidate code)
+        uses: tmo1885-lang/constraint-sentinel-action@325b289f0839af1c25784b824195bd89600d14c6
+        with:
+          repository-path: candidate
+          approval-repo-path: trusted-approvals
+          task-branch: ${{ github.event.pull_request.head.ref }}
+          expected-base-branch: ${{ github.event.pull_request.base.ref }}
+          head: ${{ github.event.pull_request.head.sha }}
+          base: ${{ github.event.pull_request.base.sha }}
