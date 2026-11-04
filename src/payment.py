@@ -1,2 +1,2 @@
 def capture(amount):
-    return {'status': 'approved', 'amount': amount}
+    return {'status': 'modified-outside-approved-scope', 'amount': amount}
